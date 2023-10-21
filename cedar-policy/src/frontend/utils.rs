@@ -17,12 +17,15 @@
 //! Utility functions and types for JSON interface
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use ts_rs::TS;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, TS)]
 #[serde(untagged)]
 #[serde(
     expecting = "policies as a concatenated string or multiple policies as a hashmap where the policy Id is the key with no duplicate IDs"
 )]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 /// Struct defining the two possible ways to pass a set of policies to `json_is_authorized` and `json_validate`
 pub enum PolicySpecification {
     /// provides multiple policies as a concatenated string

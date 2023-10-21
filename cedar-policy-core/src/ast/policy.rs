@@ -18,6 +18,7 @@ use crate::ast::*;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
+use ts_rs::TS;
 use std::collections::BTreeMap;
 use std::{collections::HashMap, sync::Arc};
 use thiserror::Error;
@@ -1383,8 +1384,10 @@ impl std::fmt::Display for StaticPolicy {
 }
 
 /// A unique identifier for a policy statement
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash)]
-pub struct PolicyID(SmolStr);
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
+pub struct PolicyID(#[ts(type = "string")] SmolStr);
 
 impl PolicyID {
     /// Create a PolicyID from a string or string-like

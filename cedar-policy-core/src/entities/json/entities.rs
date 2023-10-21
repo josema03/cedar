@@ -26,9 +26,12 @@ use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 use std::collections::HashMap;
 use std::sync::Arc;
+use ts_rs::TS;
 
 /// Serde JSON format for a single entity
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct EntityJson {
     /// UID of the entity, specified in any form accepted by `EntityUidJson`
     uid: EntityUidJson,
@@ -36,6 +39,7 @@ pub struct EntityJson {
     /// (Probably a `CedarValueJson`, but for schema-based parsing, it could for
     /// instance be an `EntityUidJson` if we're expecting an entity reference,
     /// so for now we leave it in its raw `serde_json::Value` form.)
+    #[ts(as = "CedarValueJson")]
     attrs: HashMap<SmolStr, serde_json::Value>,
     /// Parents of the entity, specified in any form accepted by `EntityUidJson`
     parents: Vec<EntityUidJson>,

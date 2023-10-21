@@ -26,6 +26,7 @@ use crate::evaluator::{EvaluationError, Evaluator};
 use crate::extensions::Extensions;
 use itertools::Either;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use std::collections::HashSet;
 use std::iter::once;
 
@@ -860,7 +861,9 @@ impl Response {
 }
 
 /// Decision returned from the `Authorizer`
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub enum Decision {
     /// The `Authorizer` determined that the request should be allowed
     Allow,

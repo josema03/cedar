@@ -25,6 +25,8 @@ use crate::{
     Authorizer, Context, Decision, Entities, EntityUid, ParseErrors, Policy, PolicySet, Request,
     Response, Schema, SlotId, Template,
 };
+use cedar_policy_core::entities::{CedarValueJson, EntityJson, EntityUidJson};
+use cedar_policy_validator::SchemaFragment;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
@@ -32,6 +34,7 @@ use serde_with::MapPreventDuplicates;
 use std::collections::{HashMap, HashSet};
 use std::str::FromStr;
 use thiserror::Error;
+use ts_rs::TS;
 
 thread_local!(
     /// Per-thread authorizer instance, initialized on first use
@@ -69,7 +72,9 @@ pub fn json_is_authorized(input: &str) -> InterfaceResult {
 }
 
 /// Interface version of a `Response` that uses `InterfaceDiagnostics` for simpler (de)serialization
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct InterfaceResponse {
     /// Authorization decision
     decision: Decision,
@@ -78,7 +83,9 @@ pub struct InterfaceResponse {
 }
 
 /// Interface version of `Diagnostics` that stores error messages as strings for simpler (de)serialization
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct InterfaceDiagnostics {
     /// `PolicyId`s of the policies that contributed to the decision.
     /// If no policies applied to the request, this set will be empty.
@@ -133,25 +140,34 @@ impl InterfaceDiagnostics {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, TS)]
 #[serde(untagged)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 enum AuthorizationAnswer {
     ParseFailed { errors: Vec<String> },
     Success { response: InterfaceResponse },
 }
 
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 struct AuthorizationCall {
+    #[ts(as = "Option<EntityUidJson>")]
     principal: Option<serde_json::Value>,
+    #[ts(as = "EntityUidJson")]
     action: serde_json::Value,
+    #[ts(as = "Option<EntityUidJson>")]
     resource: Option<serde_json::Value>,
     #[serde_as(as = "MapPreventDuplicates<_, _>")]
+    #[ts(as = "HashMap<String, CedarValueJson>")]
     context: HashMap<String, serde_json::Value>,
     /// Optional schema in JSON format.
     /// If present, this will inform the parsing: for instance, it will allow
     /// `__entity` and `__extn` escapes to be implicit, and it will error if
     /// attributes have the wrong types (e.g., string instead of integer).
+    #[ts(as = "SchemaFragment")]
     #[serde(rename = "schema")]
     schema: Option<serde_json::Value>,
     slice: RecvdSlice,
@@ -194,19 +210,25 @@ impl AuthorizationCall {
 ///
 /// Entity UID as strings.
 ///
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 struct EntityUIDStrings {
     ty: String,
     eid: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 struct Link {
     slot: String,
     value: EntityUIDStrings,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 struct TemplateLink {
     /// Template ID to fill in
     template_id: String,
@@ -219,7 +241,7 @@ struct TemplateLink {
     instantiations: Links,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(try_from = "Vec<Link>")]
 #[serde(into = "Vec<Link>")]
 struct Links(Vec<Link>);
@@ -260,11 +282,14 @@ impl From<Links> for Vec<Link> {
 
 /// policies must either be a single policy per entry, or only one entry with more than one policy
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 struct RecvdSlice {
     policies: PolicySpecification,
     /// JSON object containing the entities data, in "natural JSON" form -- same
     /// format as expected by EntityJsonParser
+    #[ts(as = "Vec<EntityJson>")]
     entities: serde_json::Value,
 
     /// Optional template policies.

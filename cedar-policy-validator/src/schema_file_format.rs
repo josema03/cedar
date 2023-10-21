@@ -22,6 +22,7 @@ use serde::{
 use serde_with::serde_as;
 use smol_str::SmolStr;
 use std::collections::{BTreeMap, HashMap, HashSet};
+use ts_rs::TS;
 
 use crate::Result;
 
@@ -30,11 +31,14 @@ use crate::Result;
 /// schema fragment is split into multiple namespace definitions, eac including
 /// a namespace name which is applied to all entity types (and the implicit
 /// `Action` entity type for all actions) in the schema.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(transparent)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct SchemaFragment(
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
-    pub  HashMap<SmolStr, NamespaceDefinition>,
+    #[ts(as = "HashMap<String, NamespaceDefinition>")]
+    pub HashMap<SmolStr, NamespaceDefinition>,
 );
 
 impl SchemaFragment {
@@ -51,19 +55,24 @@ impl SchemaFragment {
 }
 
 /// A single namespace definition from a SchemaFragment.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde_as]
 #[serde(deny_unknown_fields)]
 #[doc(hidden)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct NamespaceDefinition {
     #[serde(default)]
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
     #[serde(rename = "commonTypes")]
+    #[ts(as = "HashMap<String, SchemaType>")]
     pub common_types: HashMap<SmolStr, SchemaType>,
     #[serde(rename = "entityTypes")]
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
+    #[ts(as = "HashMap<String, EntityType>")]
     pub entity_types: HashMap<SmolStr, EntityType>,
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
+    #[ts(as = "HashMap<String, ActionType>")]
     pub actions: HashMap<SmolStr, ActionType>,
 }
 
@@ -83,18 +92,23 @@ impl NamespaceDefinition {
 /// Entity types describe the relationships in the entity store, including what
 /// entities can be members of groups of what types, and what attributes
 /// can/should be included on entities of each type.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(deny_unknown_fields)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct EntityType {
     #[serde(default)]
     #[serde(rename = "memberOfTypes")]
+    #[ts(as = "Vec<String>")]
     pub member_of_types: Vec<SmolStr>,
     #[serde(default)]
     pub shape: AttributesOrContext,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(transparent)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct AttributesOrContext(
     // We use the usual `SchemaType` deserialization, but it will ultimately
     // need to be a `Record` or type def which resolves to a `Record`.
@@ -118,13 +132,16 @@ impl Default for AttributesOrContext {
 
 /// An action type describes a specific action entity.  It also describes what
 /// kinds of entities it can be used on.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(deny_unknown_fields)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct ActionType {
     /// This maps attribute names to
     /// `cedar_policy_core::entities::json::value::CedarValueJson` which is the
     /// canonical representation of a cedar value as JSON.
     #[serde(default)]
+    #[ts(as = "Option<HashMap<String, CedarValueJson>>")]
     pub attributes: Option<HashMap<SmolStr, CedarValueJson>>,
     #[serde(default)]
     #[serde(rename = "appliesTo")]
@@ -142,26 +159,34 @@ pub struct ActionType {
 /// different than providing an empty list because the empty list is interpreted
 /// as specifying that there are no principals or resources that an action
 /// applies to.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(deny_unknown_fields)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct ApplySpec {
     #[serde(default)]
     #[serde(rename = "resourceTypes")]
+    #[ts(as = "Option<Vec<String>>")]
     pub resource_types: Option<Vec<SmolStr>>,
     #[serde(default)]
     #[serde(rename = "principalTypes")]
+    #[ts(as = "Option<Vec<String>>")]
     pub principal_types: Option<Vec<SmolStr>>,
     #[serde(default)]
     pub context: AttributesOrContext,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(deny_unknown_fields)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub struct ActionEntityUID {
+    #[ts(type = "string")]
     pub id: SmolStr,
 
     #[serde(rename = "type")]
     #[serde(default)]
+    #[ts(as = "Option<String>")]
     pub ty: Option<SmolStr>,
 }
 
@@ -184,16 +209,19 @@ impl std::fmt::Display for ActionEntityUID {
 
 /// A restricted version of the `Type` enum containing only the types which are
 /// exposed to users.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, TS)]
 // This enum is `untagged` with these variants as a workaround to a serde
 // limitation. It is not possible to have the known variants on one enum, and
 // then, have catch-all variant for any unrecognized tag in the same enum that
 // captures the name of the unrecognized tag.
 #[serde(untagged)]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub enum SchemaType {
     Type(SchemaTypeVariant),
     TypeDef {
         #[serde(rename = "type")]
+        #[ts(type = "string")]
         type_name: SmolStr,
     },
 }
@@ -464,8 +492,10 @@ impl From<SchemaTypeVariant> for SchemaType {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, TS)]
 #[serde(tag = "type")]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
 pub enum SchemaTypeVariant {
     String,
     Long,
@@ -474,14 +504,17 @@ pub enum SchemaTypeVariant {
         element: Box<SchemaType>,
     },
     Record {
+        #[ts(as = "BTreeMap<String, TypeOfAttributeForTS>")]
         attributes: BTreeMap<SmolStr, TypeOfAttribute>,
         #[serde(rename = "additionalAttributes")]
         additional_attributes: bool,
     },
     Entity {
+        #[ts(type = "string")]
         name: SmolStr,
     },
     Extension {
+        #[ts(type = "string")]
         name: SmolStr,
     },
 }
@@ -571,6 +604,61 @@ impl<'a> arbitrary::Arbitrary<'a> for SchemaType {
     fn size_hint(_depth: usize) -> (usize, Option<usize>) {
         (1, None) // Unfortunately, we probably can't be more precise than this
     }
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, TS)]
+#[serde(tag = "type")]
+#[ts(rename = "NestedSchemaTypeVariant")]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
+enum SchemaTypeVariantForTS {
+    String {
+        required: bool,
+    },
+    Long {
+        required: bool,
+    },
+    Boolean {
+        required: bool,
+    },
+    Set {
+        element: Box<TypeOfAttributeForTS>,
+        required: bool,
+    },
+    Record {
+        #[ts(as = "BTreeMap<String, TypeOfAttributeForTS>")]
+        attributes: BTreeMap<SmolStr, TypeOfAttributeForTS>,
+        #[serde(rename = "additionalAttributes")]
+        additional_attributes: bool,
+        required: bool,
+    },
+    Entity {
+        #[ts(type = "string")]
+        name: SmolStr,
+        required: bool,
+    },
+    Extension {
+        #[ts(type = "string")]
+        name: SmolStr,
+        required: bool,
+    },
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, TS)]
+#[serde(untagged)]
+#[ts(rename="TypeOfAttribute")]
+#[ts(export_to = "../cedar-policy-bindings/")]
+#[ts(export)]
+enum TypeOfAttributeForTS {
+    Type(SchemaTypeVariantForTS),
+    TypeDef {
+        #[serde(rename = "type")]
+        #[ts(type = "string")]
+        type_name: SmolStr,
+        required: bool,
+    },
 }
 
 /// Used to describe the type of a record or entity attribute. It contains a the
