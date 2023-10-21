@@ -648,7 +648,7 @@ enum SchemaTypeVariantForTS {
 #[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, TS)]
 #[serde(untagged)]
-#[ts(rename="TypeOfAttribute")]
+#[ts(rename = "TypeOfAttribute")]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
 enum TypeOfAttributeForTS {

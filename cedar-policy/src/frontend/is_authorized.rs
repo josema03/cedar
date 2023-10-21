@@ -238,6 +238,7 @@ struct TemplateLink {
 
     /// List of strings to fill in all slots in policy template "template_id".
     /// (slot, String)
+    #[ts(as = "Vec<Link>")]
     instantiations: Links,
 }
 

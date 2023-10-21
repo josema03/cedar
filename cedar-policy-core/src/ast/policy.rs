@@ -18,10 +18,10 @@ use crate::ast::*;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
-use ts_rs::TS;
 use std::collections::BTreeMap;
 use std::{collections::HashMap, sync::Arc};
 use thiserror::Error;
+use ts_rs::TS;
 
 /// Top level structure for a policy template.
 /// Contains both the AST for template, and the list of open slots in the template.

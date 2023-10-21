@@ -26,9 +26,9 @@ use crate::evaluator::{EvaluationError, Evaluator};
 use crate::extensions::Extensions;
 use itertools::Either;
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 use std::collections::HashSet;
 use std::iter::once;
+use ts_rs::TS;
 
 mod err;
 pub use err::AuthorizationError;
