@@ -28,6 +28,7 @@ use cedar_policy_core::authorizer;
 pub use cedar_policy_core::authorizer::AuthorizationError;
 use cedar_policy_core::entities;
 use cedar_policy_core::entities::JsonDeserializationErrorContext;
+pub use cedar_policy_core::entities::{CedarValueJson, EntityJson, EntityUidJson};
 use cedar_policy_core::entities::{ContextSchema, Dereference, JsonDeserializationError};
 use cedar_policy_core::est;
 pub use cedar_policy_core::evaluator::{EvaluationError, EvaluationErrorKind};
@@ -39,7 +40,7 @@ pub use cedar_policy_core::parser::err::ParseErrors;
 use cedar_policy_core::parser::SourceInfo;
 use cedar_policy_core::FromNormalizedStr;
 pub use cedar_policy_validator::{
-    TypeErrorKind, UnsupportedFeature, ValidationErrorKind, ValidationWarningKind,
+    TypeErrorKind, UnsupportedFeature, ValidationErrorKind, ValidationWarningKind, SchemaFragment as SchemaFragmentInput
 };
 use ref_cast::RefCast;
 use serde::{Deserialize, Serialize};

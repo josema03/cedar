@@ -22,11 +22,9 @@ use crate::api::EntityId;
 use crate::api::EntityTypeName;
 use crate::PolicyId;
 use crate::{
-    Authorizer, Context, Decision, Entities, EntityUid, ParseErrors, Policy, PolicySet, Request,
-    Response, Schema, SlotId, Template,
+    Authorizer, CedarValueJson, Context, Decision, Entities, EntityJson, EntityUid, EntityUidJson,
+    ParseErrors, Policy, PolicySet, Request, Response, Schema, SchemaFragmentInput, SlotId, Template,
 };
-use cedar_policy_core::entities::{CedarValueJson, EntityJson, EntityUidJson};
-use cedar_policy_validator::SchemaFragment;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
@@ -167,7 +165,7 @@ struct AuthorizationCall {
     /// If present, this will inform the parsing: for instance, it will allow
     /// `__entity` and `__extn` escapes to be implicit, and it will error if
     /// attributes have the wrong types (e.g., string instead of integer).
-    #[ts(as = "SchemaFragment")]
+    #[ts(as = "SchemaFragmentInput")]
     #[serde(rename = "schema")]
     schema: Option<serde_json::Value>,
     slice: RecvdSlice,
