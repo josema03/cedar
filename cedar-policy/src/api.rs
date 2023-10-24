@@ -40,7 +40,8 @@ pub use cedar_policy_core::parser::err::ParseErrors;
 use cedar_policy_core::parser::SourceInfo;
 use cedar_policy_core::FromNormalizedStr;
 pub use cedar_policy_validator::{
-    TypeErrorKind, UnsupportedFeature, ValidationErrorKind, ValidationWarningKind, SchemaFragment as SchemaFragmentInput
+    SchemaFragment as SchemaFragmentInput, TypeErrorKind, UnsupportedFeature, ValidationErrorKind,
+    ValidationWarningKind,
 };
 use ref_cast::RefCast;
 use serde::{Deserialize, Serialize};
@@ -1032,6 +1033,12 @@ impl Schema {
         Ok(Self(cedar_policy_validator::ValidatorSchema::from_file(
             file,
         )?))
+    }
+
+    /// Create a `Schema` from a string (which should be an object of the
+    /// shape required for Cedar schemas).
+    pub fn from_str(s: &str) -> Result<Self, SchemaError> {
+        Ok(Self(cedar_policy_validator::ValidatorSchema::from_str(s)?))
     }
 
     /// Extract from the schema an `Entities` containing the action entities
