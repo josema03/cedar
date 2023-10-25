@@ -39,7 +39,7 @@ pub struct EntityJson {
     /// (Probably a `CedarValueJson`, but for schema-based parsing, it could for
     /// instance be an `EntityUidJson` if we're expecting an entity reference,
     /// so for now we leave it in its raw `serde_json::Value` form.)
-    #[ts(as = "CedarValueJson")]
+    #[ts(as = "HashMap<String, CedarValueJson>")]
     attrs: HashMap<SmolStr, serde_json::Value>,
     /// Parents of the entity, specified in any form accepted by `EntityUidJson`
     parents: Vec<EntityUidJson>,
