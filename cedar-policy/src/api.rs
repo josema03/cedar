@@ -44,6 +44,7 @@ pub use cedar_policy_validator::{
     ValidationWarningKind,
 };
 use ref_cast::RefCast;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
@@ -2242,7 +2243,7 @@ impl TemplateResourceConstraint {
 
 /// Unique Ids assigned to policies and templates
 #[repr(transparent)]
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize, RefCast, TS)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize, RefCast, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
 pub struct PolicyId(ast::PolicyID);

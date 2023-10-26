@@ -29,6 +29,7 @@ ts-rs = "7.0.0"
 
 # decimal extension requires regex
 regex = { version = "1.8", features = ["unicode"], optional = true }
+schemars = "0.8.15"
 
 [features]
 # by default, enable all Cedar extensions

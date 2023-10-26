@@ -24,6 +24,7 @@ use crate::ast::{
 use crate::entities::EscapeKind;
 use crate::extensions::{ExtensionFunctionLookupError, Extensions};
 use crate::FromNormalizedStr;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 use std::collections::{HashMap, HashSet};
@@ -37,7 +38,7 @@ use ts_rs::TS;
 ///
 /// For example, this is the JSON format for attribute values expected by
 /// `EntityJsonParser`, when schema-based parsing is not used.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS, JsonSchema)]
 #[serde(untagged)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
@@ -58,6 +59,7 @@ pub enum CedarValueJson {
     ExprEscape {
         /// String to interpret as a (restricted) Cedar expression
         #[ts(type = "string")]
+        #[schemars(with = "String")]
         __expr: SmolStr,
     },
     /// Special JSON object with single reserved "__entity" key:
@@ -91,7 +93,11 @@ pub enum CedarValueJson {
     /// JSON int => Cedar long (64-bit signed integer)
     Long(i64),
     /// JSON string => Cedar string
-    String(#[ts(type = "string")] SmolStr),
+    String(
+        #[ts(type = "string")]
+        #[schemars(with = "String")]
+        SmolStr,
+    ),
     /// JSON list => Cedar set; can contain any JSONValues, even
     /// heterogeneously
     Set(Vec<CedarValueJson>),
@@ -101,16 +107,18 @@ pub enum CedarValueJson {
 }
 
 /// Structure expected by the `__entity` escape
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
 pub struct TypeAndId {
     /// Entity typename
     #[serde(rename = "type")]
     #[ts(type = "string")]
+    #[schemars(with = "String")]
     entity_type: SmolStr,
     /// Entity id
     #[ts(type = "string")]
+    #[schemars(with = "String")]
     id: SmolStr,
 }
 
@@ -145,13 +153,14 @@ impl TryFrom<TypeAndId> for EntityUID {
 }
 
 /// Structure expected by the `__extn` escape
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
 pub struct FnAndArg {
     /// Extension constructor function
     #[serde(rename = "fn")]
     #[ts(type = "string")]
+    #[schemars(with = "String")]
     ext_fn: SmolStr,
     /// Argument to that constructor
     arg: Box<CedarValueJson>,
@@ -557,7 +566,7 @@ impl<'e> ValueParser<'e> {
 
 /// Serde JSON format for Cedar values where we know we're expecting an entity
 /// reference
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS, JsonSchema)]
 #[serde(untagged)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
@@ -570,6 +579,7 @@ pub enum EntityUidJson {
         /// String to interpret as a (restricted) Cedar expression.
         /// In this case, it must evaluate to an entity reference.
         #[ts(type = "string")]
+        #[schemars(with = "String")]
         __expr: SmolStr,
     },
     /// Explicit `__entity` escape; see notes on `CedarValueJson::EntityEscape`
@@ -581,7 +591,11 @@ pub enum EntityUidJson {
     ///
     /// Deprecated since the 1.2 release; use
     /// `{ "type": "...", "id": "..." }` instead.
-    ImplicitExprEscape(#[ts(type = "string")] SmolStr),
+    ImplicitExprEscape(
+        #[ts(type = "string")]
+        #[schemars(with = "String")]
+        SmolStr,
+    ),
     /// Implicit `__entity` escape, in which case we'll see just the TypeAndId
     /// structure
     ImplicitEntityEscape(TypeAndId),

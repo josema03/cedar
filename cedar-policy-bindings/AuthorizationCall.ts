@@ -4,4 +4,4 @@ import type { EntityUidJson } from "./EntityUidJson";
 import type { RecvdSlice } from "./RecvdSlice";
 import type { SchemaFragment } from "./SchemaFragment";
 
-export interface AuthorizationCall { principal: EntityUidJson | null, action: EntityUidJson, resource: EntityUidJson | null, context: Record<string, CedarValueJson>, schema: SchemaFragment, slice: RecvdSlice, }
+export interface AuthorizationCall { principal: EntityUidJson | null, action: EntityUidJson, resource: EntityUidJson | null, context: Record<string, CedarValueJson>, schema: SchemaFragment | null, slice: RecvdSlice, }

@@ -15,11 +15,12 @@
  */
 
 //! Utility functions and types for JSON interface
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
 
-#[derive(Debug, Serialize, Deserialize, TS)]
+#[derive(Debug, Serialize, Deserialize, TS, JsonSchema)]
 #[serde(untagged)]
 #[serde(
     expecting = "policies as a concatenated string or multiple policies as a hashmap where the policy Id is the key with no duplicate IDs"
@@ -32,6 +33,7 @@ pub enum PolicySpecification {
     Concatenated(String),
     /// provides multiple policies as a hashmap where the policyId is the key
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
+    #[schemars(with = "HashMap<String, String>")]
     Map(HashMap<String, String>),
 }
 
@@ -103,4 +105,34 @@ pub(crate) fn assert_is_failure(result: &InterfaceResult, internal: bool, err: &
             "Expected to see error containing `{err}`, but saw {errors:?}");
         assert_eq!(is_internal, &internal, "Unexpected value for `is_internal`");
     });
+}
+
+/// Utility Macro used to export JSON schemas
+#[macro_export]
+macro_rules! generate_json_schema_file {
+    ($($x:ident),*) => {
+
+        $(
+            paste::paste! {
+                #[test]
+                fn [<generate_json_schema_for_ $x:lower>]() {
+                    use std::io::prelude::*;
+
+                    let _dir = std::fs::create_dir_all("../cedar-policy-json-schemas");
+
+                    let mut file = std::fs::File::create(format!("../cedar-policy-json-schemas/{}.json", stringify!($x))).unwrap();
+                    let json_data = serde_json::to_string_pretty(&schemars::schema_for!($x)).unwrap();
+                    let _result = file.write_all(json_data.as_bytes());
+                }
+            }
+        )*
+
+        // let schema_vec = vec![$((stringify!($x), schemars::schema_for!($x)),)*];
+
+        // for (name, schema) in schema_vec {
+        //     let mut file = std::fs::File::create(format!("{}.json", name)).unwrap();
+        //     let json_data = serde_json::to_string_pretty(&schema).unwrap();
+        //     let _result = file.write_all(json_data.as_bytes());
+        // }
+    };
 }

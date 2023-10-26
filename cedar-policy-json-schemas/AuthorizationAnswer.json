@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AuthorizationAnswer",
+  "anyOf": [
+    {
+      "type": "object",
+      "required": [
+        "errors"
+      ],
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "response"
+      ],
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/InterfaceResponse"
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "Decision": {
+      "description": "Decision returned from the `Authorizer`",
+      "oneOf": [
+        {
+          "description": "The `Authorizer` determined that the request should be allowed",
+          "type": "string",
+          "enum": [
+            "Allow"
+          ]
+        },
+        {
+          "description": "The `Authorizer` determined that the request should be denied. This is also returned if sufficiently fatal errors are encountered such that no decision could be safely reached; for example, errors parsing the policies.",
+          "type": "string",
+          "enum": [
+            "Deny"
+          ]
+        }
+      ]
+    },
+    "InterfaceDiagnostics": {
+      "description": "Interface version of `Diagnostics` that stores error messages as strings for simpler (de)serialization",
+      "type": "object",
+      "required": [
+        "errors",
+        "reason"
+      ],
+      "properties": {
+        "errors": {
+          "description": "Set of error messages that occurred",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "reason": {
+          "description": "`PolicyId`s of the policies that contributed to the decision. If no policies applied to the request, this set will be empty.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PolicyId"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "InterfaceResponse": {
+      "description": "Interface version of a `Response` that uses `InterfaceDiagnostics` for simpler (de)serialization",
+      "type": "object",
+      "required": [
+        "decision",
+        "diagnostics"
+      ],
+      "properties": {
+        "decision": {
+          "description": "Authorization decision",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decision"
+            }
+          ]
+        },
+        "diagnostics": {
+          "description": "Diagnostics providing more information on how this decision was reached",
+          "allOf": [
+            {
+              "$ref": "#/definitions/InterfaceDiagnostics"
+            }
+          ]
+        }
+      }
+    },
+    "PolicyID": {
+      "description": "A unique identifier for a policy statement",
+      "type": "string"
+    },
+    "PolicyId": {
+      "description": "Unique Ids assigned to policies and templates",
+      "allOf": [
+        {
+          "$ref": "#/definitions/PolicyID"
+        }
+      ]
+    }
+  }
+}

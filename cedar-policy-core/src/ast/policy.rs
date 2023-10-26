@@ -16,6 +16,7 @@
 
 use crate::ast::*;
 use itertools::Itertools;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use smol_str::SmolStr;
 use std::collections::BTreeMap;
@@ -1384,10 +1385,14 @@ impl std::fmt::Display for StaticPolicy {
 }
 
 /// A unique identifier for a policy statement
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash, TS)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
-pub struct PolicyID(#[ts(type = "string")] SmolStr);
+pub struct PolicyID(
+    #[ts(type = "string")]
+    #[schemars(with = "String")]
+    SmolStr,
+);
 
 impl PolicyID {
     /// Create a PolicyID from a string or string-like
