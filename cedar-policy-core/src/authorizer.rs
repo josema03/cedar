@@ -865,6 +865,7 @@ impl Response {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub enum Decision {
     /// The `Authorizer` determined that the request should be allowed
     Allow,

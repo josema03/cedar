@@ -42,6 +42,7 @@ use ts_rs::TS;
 #[serde(untagged)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub enum CedarValueJson {
     /// Special JSON object with single reserved "__expr" key:
     /// interpret the following string as a (restricted) Cedar expression.
@@ -110,6 +111,7 @@ pub enum CedarValueJson {
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct TypeAndId {
     /// Entity typename
     #[serde(rename = "type")]
@@ -156,6 +158,7 @@ impl TryFrom<TypeAndId> for EntityUID {
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct FnAndArg {
     /// Extension constructor function
     #[serde(rename = "fn")]
@@ -570,6 +573,7 @@ impl<'e> ValueParser<'e> {
 #[serde(untagged)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub enum EntityUidJson {
     /// Explicit `__expr` escape; see notes on `CedarValueJson::ExprEscape`.
     ///

@@ -1388,6 +1388,7 @@ impl std::fmt::Display for StaticPolicy {
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Hash, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct PolicyID(
     #[ts(type = "string")]
     #[schemars(with = "String")]

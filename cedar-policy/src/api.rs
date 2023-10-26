@@ -2246,6 +2246,7 @@ impl TemplateResourceConstraint {
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize, RefCast, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct PolicyId(ast::PolicyID);
 
 impl FromStr for PolicyId {

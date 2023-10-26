@@ -27,6 +27,7 @@ use ts_rs::TS;
 )]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 /// Struct defining the two possible ways to pass a set of policies to `json_is_authorized` and `json_validate`
 pub enum PolicySpecification {
     /// provides multiple policies as a concatenated string

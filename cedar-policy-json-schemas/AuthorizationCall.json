@@ -44,13 +44,14 @@
         "null"
       ],
       "additionalProperties": {
-        "$ref": "#/definitions/NamespaceDefinition"
+        "$ref": "#/definitions/NamespaceDefinitionForJsonSchema"
       }
     },
     "slice": {
       "$ref": "#/definitions/RecvdSlice"
     }
   },
+  "additionalProperties": false,
   "definitions": {
     "ActionEntityUID": {
       "type": "object",
@@ -163,7 +164,8 @@
               "description": "String to interpret as a (restricted) Cedar expression",
               "type": "string"
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "description": "Special JSON object with single reserved \"__entity\" key: the following item should be a JSON object of the form `{ \"type\": \"xxx\", \"id\": \"yyy\" }`. Some escape (this or `__expr`, which is deprecated) is necessary for entity references.",
@@ -180,7 +182,8 @@
                 }
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "description": "Special JSON object with single reserved \"__extn\" key: the following item should be a JSON object of the form `{ \"fn\": \"xxx\", \"arg\": \"yyy\" }`. Some escape (this or `__expr`, which is deprecated) is necessary for extension values.",
@@ -197,7 +200,8 @@
                 }
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "description": "JSON bool => Cedar bool",
@@ -268,7 +272,8 @@
         "ty": {
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "EntityUidJson": {
       "description": "Serde JSON format for Cedar values where we know we're expecting an entity reference",
@@ -284,7 +289,8 @@
               "description": "String to interpret as a (restricted) Cedar expression. In this case, it must evaluate to an entity reference.",
               "type": "string"
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "description": "Explicit `__entity` escape; see notes on `CedarValueJson::EntityEscape`",
@@ -301,7 +307,8 @@
                 }
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "description": "Implicit `__expr` escape, in which case we'll just see a JSON string.\n\nDeprecated since the 1.2 release; use `{ \"type\": \"...\", \"id\": \"...\" }` instead.",
@@ -337,7 +344,8 @@
           "description": "Extension constructor function",
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "Link": {
       "type": "object",
@@ -352,7 +360,8 @@
         "value": {
           "$ref": "#/definitions/EntityUIDStrings"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "Links": {
       "type": "array",
@@ -360,13 +369,12 @@
         "$ref": "#/definitions/Link"
       }
     },
-    "NamespaceDefinition": {
-      "description": "A single namespace definition from a SchemaFragment.",
+    "NamespaceDefinitionForJsonSchema": {
       "type": "object",
       "required": [
         "actions",
         "commonTypes",
-        "entityTypes"
+        "entity_types"
       ],
       "properties": {
         "actions": {
@@ -381,7 +389,7 @@
             "$ref": "#/definitions/SchemaType"
           }
         },
-        "entityTypes": {
+        "entity_types": {
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/EntityType"
@@ -441,7 +449,8 @@
             "type": "string"
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "SchemaType": {
       "description": "A restricted version of the `Type` enum containing only the types which are exposed to users.",
@@ -458,7 +467,8 @@
             "type": {
               "type": "string"
             }
-          }
+          },
+          "additionalProperties": false
         }
       ]
     },
@@ -476,7 +486,8 @@
                 "String"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "type": "object",
@@ -490,7 +501,8 @@
                 "Long"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "type": "object",
@@ -504,7 +516,8 @@
                 "Boolean"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "type": "object",
@@ -522,7 +535,8 @@
                 "Set"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "type": "object",
@@ -547,7 +561,8 @@
                 "Record"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "type": "object",
@@ -565,7 +580,8 @@
                 "Entity"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         {
           "type": "object",
@@ -583,7 +599,8 @@
                 "Extension"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         }
       ]
     },
@@ -611,7 +628,8 @@
           "description": "Template ID to fill in",
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "TypeAndId": {
       "description": "Structure expected by the `__entity` escape",
@@ -629,7 +647,8 @@
           "description": "Entity typename",
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "TypeOfAttribute": {
       "description": "Used to describe the type of a record or entity attribute. It contains a the type of the attribute and whether the attribute is required. The type is flattened for serialization, so, in JSON format, this appears as a regular type with one extra property `required`.\n\nNote that we can't add #[serde(deny_unknown_fields)] here because we are using #[serde(tag = \"type\")] in ty:SchemaType which is flattened here. The way serde(flatten) is implemented means it may be possible to access fields incorrectly if a struct contains two structs that are flattened (`<https://github.com/serde-rs/serde/issues/1547>`). This shouldn't apply to us as we're using flatten only once (`<https://github.com/serde-rs/serde/issues/1600>`). This should be ok because unknown fields for TypeOfAttribute should be passed to SchemaType where they will be denied (`<https://github.com/serde-rs/serde/issues/1600>`).",
@@ -647,7 +666,8 @@
             "type": {
               "type": "string"
             }
-          }
+          },
+          "additionalProperties": false
         }
       ],
       "properties": {
@@ -655,7 +675,8 @@
           "default": true,
           "type": "boolean"
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }

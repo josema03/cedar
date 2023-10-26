@@ -36,10 +36,11 @@ use crate::Result;
 #[serde(transparent)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct SchemaFragment(
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
     #[ts(as = "HashMap<String, NamespaceDefinition>")]
-    #[schemars(with = "HashMap<String, NamespaceDefinition>")]
+    #[schemars(with = "HashMap<String, NamespaceDefinitionForJsonSchema>")]
     pub HashMap<SmolStr, NamespaceDefinition>,
 );
 
@@ -56,9 +57,24 @@ impl SchemaFragment {
     }
 }
 
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+#[doc(hidden)]
+#[schemars(deny_unknown_fields)]
+pub struct NamespaceDefinitionForJsonSchema {
+    #[serde(rename = "commonTypes")]
+    #[schemars(with = "HashMap<String, SchemaType>")]
+    pub common_types: HashMap<SmolStr, SchemaType>,
+    #[schemars(with = "HashMap<String, EntityType>")]
+    pub entity_types: HashMap<SmolStr, EntityType>,
+    #[schemars(with = "HashMap<String, ActionType>")]
+    pub actions: HashMap<SmolStr, ActionType>,
+}
+
 /// A single namespace definition from a SchemaFragment.
 #[serde_as]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(deny_unknown_fields)]
 #[doc(hidden)]
 #[ts(export_to = "../cedar-policy-bindings/")]
@@ -68,16 +84,13 @@ pub struct NamespaceDefinition {
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
     #[serde(rename = "commonTypes")]
     #[ts(as = "HashMap<String, SchemaType>")]
-    #[schemars(with = "HashMap<String, SchemaType>")]
     pub common_types: HashMap<SmolStr, SchemaType>,
     #[serde(rename = "entityTypes")]
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
     #[ts(as = "HashMap<String, EntityType>")]
-    #[schemars(with = "HashMap<String, EntityType>")]
     pub entity_types: HashMap<SmolStr, EntityType>,
     #[serde(with = "::serde_with::rust::maps_duplicate_key_is_error")]
     #[ts(as = "HashMap<String, ActionType>")]
-    #[schemars(with = "HashMap<String, ActionType>")]
     pub actions: HashMap<SmolStr, ActionType>,
 }
 
@@ -101,6 +114,7 @@ impl NamespaceDefinition {
 #[serde(deny_unknown_fields)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct EntityType {
     #[serde(default)]
     #[serde(rename = "memberOfTypes")]
@@ -115,6 +129,7 @@ pub struct EntityType {
 #[serde(transparent)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct AttributesOrContext(
     // We use the usual `SchemaType` deserialization, but it will ultimately
     // need to be a `Record` or type def which resolves to a `Record`.
@@ -142,6 +157,7 @@ impl Default for AttributesOrContext {
 #[serde(deny_unknown_fields)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct ActionType {
     /// This maps attribute names to
     /// `cedar_policy_core::entities::json::value::CedarValueJson` which is the
@@ -169,6 +185,7 @@ pub struct ActionType {
 #[serde(deny_unknown_fields)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct ApplySpec {
     #[serde(default)]
     #[serde(rename = "resourceTypes")]
@@ -188,6 +205,7 @@ pub struct ApplySpec {
 #[serde(deny_unknown_fields)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct ActionEntityUID {
     #[ts(type = "string")]
     #[schemars(with = "String")]
@@ -227,6 +245,7 @@ impl std::fmt::Display for ActionEntityUID {
 #[serde(untagged)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub enum SchemaType {
     Type(SchemaTypeVariant),
     TypeDef {
@@ -507,6 +526,7 @@ impl From<SchemaTypeVariant> for SchemaType {
 #[serde(tag = "type")]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub enum SchemaTypeVariant {
     String,
     Long,
@@ -690,6 +710,7 @@ enum TypeOfAttributeForTS {
 /// they will be denied (`<https://github.com/serde-rs/serde/issues/1600>`).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Eq, PartialOrd, Ord, JsonSchema)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
+#[schemars(deny_unknown_fields)]
 pub struct TypeOfAttribute {
     #[serde(flatten)]
     pub ty: SchemaType,

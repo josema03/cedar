@@ -73,6 +73,7 @@ pub fn json_is_authorized(input: &str) -> InterfaceResult {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct InterfaceResponse {
     /// Authorization decision
     decision: Decision,
@@ -84,6 +85,7 @@ pub struct InterfaceResponse {
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 pub struct InterfaceDiagnostics {
     /// `PolicyId`s of the policies that contributed to the decision.
     /// If no policies applied to the request, this set will be empty.
@@ -142,6 +144,7 @@ impl InterfaceDiagnostics {
 #[serde(untagged)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 enum AuthorizationAnswer {
     ParseFailed { errors: Vec<String> },
     Success { response: InterfaceResponse },
@@ -153,6 +156,7 @@ generate_json_schema_file!(AuthorizationAnswer);
 #[derive(Debug, Serialize, Deserialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 struct AuthorizationCall {
     #[ts(as = "Option<EntityUidJson>")]
     #[schemars(with = "Option<EntityUidJson>")]
@@ -220,6 +224,7 @@ impl AuthorizationCall {
 #[derive(Debug, Clone, Serialize, Deserialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 struct EntityUIDStrings {
     ty: String,
     eid: String,
@@ -228,6 +233,7 @@ struct EntityUIDStrings {
 #[derive(Debug, Clone, Serialize, Deserialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 struct Link {
     slot: String,
     value: EntityUIDStrings,
@@ -236,6 +242,7 @@ struct Link {
 #[derive(Debug, Serialize, Deserialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 struct TemplateLink {
     /// Template ID to fill in
     template_id: String,
@@ -252,6 +259,7 @@ struct TemplateLink {
 #[derive(Debug, Clone, Serialize, Deserialize, TS, JsonSchema)]
 #[serde(try_from = "Vec<Link>")]
 #[serde(into = "Vec<Link>")]
+#[schemars(deny_unknown_fields)]
 struct Links(Vec<Link>);
 
 /// Error returned for duplicate link ids in a template instantiation
@@ -293,6 +301,7 @@ impl From<Links> for Vec<Link> {
 #[derive(Debug, Serialize, Deserialize, TS, JsonSchema)]
 #[ts(export_to = "../cedar-policy-bindings/")]
 #[ts(export)]
+#[schemars(deny_unknown_fields)]
 struct RecvdSlice {
     policies: PolicySpecification,
     /// JSON object containing the entities data, in "natural JSON" form -- same

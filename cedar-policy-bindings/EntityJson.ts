@@ -2,4 +2,4 @@
 import type { CedarValueJson } from "./CedarValueJson";
 import type { EntityUidJson } from "./EntityUidJson";
 
-export interface EntityJson { uid: EntityUidJson, attrs: CedarValueJson, parents: Array<EntityUidJson>, }
+export interface EntityJson { uid: EntityUidJson, attrs: Record<string, CedarValueJson>, parents: Array<EntityUidJson>, }

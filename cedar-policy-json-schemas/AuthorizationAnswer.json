@@ -14,7 +14,8 @@
             "type": "string"
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     {
       "type": "object",
@@ -25,7 +26,8 @@
         "response": {
           "$ref": "#/definitions/InterfaceResponse"
         }
-      }
+      },
+      "additionalProperties": false
     }
   ],
   "definitions": {
@@ -72,7 +74,8 @@
           },
           "uniqueItems": true
         }
-      }
+      },
+      "additionalProperties": false
     },
     "InterfaceResponse": {
       "description": "Interface version of a `Response` that uses `InterfaceDiagnostics` for simpler (de)serialization",
@@ -98,7 +101,8 @@
             }
           ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "PolicyID": {
       "description": "A unique identifier for a policy statement",
